@@ -103,6 +103,15 @@ back.addEventListener('click', () => {
 
 
 
+// Rounding
+let roundDec = function (num, x) {
+    let y = Math.pow(10, x);
+    num = num * y;
+    num = Math.round(num);
+    num = num / y;
+    return(num)
+}
+
 
 /*NUMBERS*/
 /************************************************************************************************************/
@@ -133,14 +142,15 @@ numButtons.forEach(button => {
 /************************************************************************************************************/
 
 const evaluate = function (phrase) {
-    console.log(inputs);
 
     while (phrase.length > 1) {
         let temp = [operate(phrase[0], phrase[1], phrase[2])];
+        if (temp[0] == 'Divide by 0') {
+            return(temp[0]);
+        }
         phrase = temp.concat(phrase.slice(3));
     }
 
-    console.log(phrase);
     return(phrase);
 }
 
@@ -169,15 +179,21 @@ let pressOperator = function (input) {
         if (input == '=') {
             inputs.push(currentInput.join(''));
             let answer = evaluate(inputs);
-            clearDisplay();
-            if (answer.includes('.')) {
-                decimal = true;
-            }
-            numStart = false;
-            decimal = false;
-            currentInput.push(answer);
-            updateDisplay();
 
+            if (answer == 'Divide by 0') {
+                clearDisplay();
+                display.textContent = answer;
+            } else {
+                answer = roundDec(answer[0], 3);
+                clearDisplay();
+                decimal = false;
+                if (String(answer).split('').includes('.')) {
+                    decimal = true;
+                }
+                numStart = false;
+                currentInput.push(answer);
+                updateDisplay();
+            }
 
             
         }  else if (input != '.')  {
@@ -196,3 +212,5 @@ operatorButtons.forEach(button => {
         pressOperator(e.target.textContent);
     })
 });
+
+
